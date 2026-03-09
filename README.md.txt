@@ -21,3 +21,22 @@ Este programa foi desenvolvido para automatizar a gestão de ativos de hardware 
 
 -Tudo em CSV: O programa deixa tudo organizado em arquivos CSV, o que facilita a visualização e a manipulação das informações.
 
+
+
+*HelpDesk v2.0:*
+
+-Instalação em Lote: O sistema agora permite a seleção múltipla de softwares e executa as instalações de forma simultânea. Isso reduz o tempo de preparação de uma máquina nova em até 70%.
+
+-Segurança e Criptografia (SHA-256): Implementação de um Admin Center protegido por senha. O sistema não armazena a senha real, mas sim um hash criptográfico com Salt, impedindo que qualquer pessoa com acesso ao código-fonte descubra a credencial mestre.
+
+-Redundância de Conexão: O repositório de rede agora possui inteligência de conexão. Caso o servidor não responda pelo nome de rede (Hostname), o programa alterna automaticamente para o endereço IP, garantindo que os logs sejam salvos mesmo com falhas de DNS.
+
+-Execução Local Segura: Para evitar falhas de instalação por oscilação de rede, o sistema agora realiza o Download-to-Temp. O instalador é copiado para a pasta temporária local da máquina antes de ser executado, garantindo maior estabilidade no processo.
+
+-Auditoria de Acessos: Foi criado um sistema de logs de auditoria que registra quem acessou o menu administrativo, por quanto tempo permaneceu e se houve tentativas de login sem sucesso, aumentando a governança sobre as ferramentas de TI.
+
+-Arquitetura DTO: O código foi refatorado para usar objetos de transferência de dados, separando a lógica de coleta da lógica de persistência. Isso torna o sistema mais leve e fácil de dar manutenção.
+
+-Tratamento de Exceções Robusto: O sistema agora isola falhas. Se uma instalação de software falhar ou um componente WMI não responder, o programa continua a execução dos demais módulos em vez de travar por completo.
+
+

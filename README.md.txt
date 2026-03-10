@@ -1,11 +1,10 @@
 Projeto: HelpDesk
 
-
 Este programa foi desenvolvido para automatizar a gestão de ativos de hardware e software em uma rede corporativa. Ele elimina a necessidade de coleta manual de dados, garantindo que as informações sempre atualizadas em um servidor central.
 
 
-*HelpDesk v1.0:*
 
+*HelpDeskAPI v1.0:*
 
 -Identificação Única: O programa usa o número de série da placa-mãe como chave principal para identificar cada notebook e não deixar criar cadastro duplicado no banco de dados;
 
@@ -22,8 +21,7 @@ Este programa foi desenvolvido para automatizar a gestão de ativos de hardware 
 -Tudo em CSV: O programa deixa tudo organizado em arquivos CSV, o que facilita a visualização e a manipulação das informações.
 
 
-
-*HelpDesk v2.0:*
+*HelpDeskAPI v2.0:*
 
 -Instalação em Lote: O sistema agora permite a seleção múltipla de softwares e executa as instalações de forma simultânea. Isso reduz o tempo de preparação de uma máquina nova em até 70%.
 
@@ -40,3 +38,7 @@ Este programa foi desenvolvido para automatizar a gestão de ativos de hardware 
 -Tratamento de Exceções Robusto: O sistema agora isola falhas. Se uma instalação de software falhar ou um componente WMI não responder, o programa continua a execução dos demais módulos em vez de travar por completo.
 
 
+*HelpDeskAPI v2.1:*
+
+- Correção de bugs
+- Implementação de logs automáticos em arquivos .txt individuais por máquina, registrando data, usuário e configurações de hardware de forma cumulativa e sem sobrescrita para garantir a preservação do histórico.

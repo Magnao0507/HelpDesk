@@ -8,8 +8,8 @@ namespace HelpDeskAPI
 {
     class Program
     {
-        private static string saltEnind = "@EnindTIC_2026_Sec!";
-        private static string identificadorAcesso = "24484d3fd9cc61b6336d4a5cbf8b0f36f58cfd60ff4ef72a8ee737d4b216e16d";
+        private static string saltSistema = "CHAVE_SISTEMA_AQUI";
+        private static string hashAcesso = "HASH_GERADO_AQUI";
 
         static void Main(string[] args)
         {
@@ -52,15 +52,15 @@ namespace HelpDeskAPI
             Console.Write(" Senha de Administrador: ");
             string sDigitada = LerSenha();
 
-            if (Calcular(sDigitada) == identificadorAcesso)
+            if (Calcular(sDigitada) == hashAcesso)
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                Console.WriteLine(" 1. André Marthas\n 2. Arthur Magno");
+                Console.WriteLine(" 1. Administrador 1\n 2. Administrador 2");
                 Console.ResetColor();
                 Console.Write("\n Admin: ");
                 string loginOp = Console.ReadLine();
-                string loginNome = loginOp == "1" ? "André Marthas" : "Arthur Magno";
+                string loginNome = loginOp == "1" ? "Admin_1" : "Admin_2";
                 DateTime entrada = DateTime.Now;
                 while (true)
                 {
@@ -99,14 +99,14 @@ namespace HelpDeskAPI
                 string tag3 = selecionados.Contains(3) ? " - [ESCOLHIDA]" : "";
                 string tag4 = selecionados.Contains(4) ? " - [ESCOLHIDA]" : "";
 
-                Console.WriteLine($" 1. Ninite{tag1}");
-                Console.WriteLine($" 2. Office 365{tag2}");
-                Console.WriteLine($" 3. Project{tag3}");
-                Console.WriteLine($" 4. Bitdefender{tag4}");
+                Console.WriteLine($" 1. Opção 1{tag1}");
+                Console.WriteLine($" 2. Opção 2{tag2}");
+                Console.WriteLine($" 3. Opção 3{tag3}");
+                Console.WriteLine($" 4. Opção 4{tag4}");
                 Console.WriteLine(" 5. CONFIRMAR INSTALAÇÃO");
                 Console.WriteLine(" 6. Voltar");
                 Console.WriteLine("────────────────────────────────────────");
-                Console.Write(" Selecione para marcar/desmarcar: ");
+                Console.Write(" Selecione: ");
                 string input = Console.ReadLine();
 
                 if (input == "1" || input == "2" || input == "3" || input == "4")
@@ -144,10 +144,7 @@ namespace HelpDeskAPI
             Console.WriteLine("║       CONFIRMAÇÃO DE INSTALAÇÃO      ║");
             Console.WriteLine("╚══════════════════════════════════════╝");
             Console.ResetColor();
-            if (selecionados.Contains(1)) Console.WriteLine(" > Ninite");
-            if (selecionados.Contains(2)) Console.WriteLine(" > Office 365");
-            if (selecionados.Contains(3)) Console.WriteLine(" > Project");
-            if (selecionados.Contains(4)) Console.WriteLine(" > Bitdefender");
+            Console.WriteLine(" Verifique os itens marcados antes de prosseguir.");
             Console.WriteLine("────────────────────────────────────────");
             Console.WriteLine(" 1. Confirmar\n 2. Voltar");
             Console.Write("\n Selecione: ");
@@ -162,19 +159,19 @@ namespace HelpDeskAPI
             Console.WriteLine("║            SISTEMA DE BUSCA          ║");
             Console.WriteLine("╚══════════════════════════════════════╝");
             Console.ResetColor();
-            Console.WriteLine(" 1. Usuário");
-            Console.WriteLine(" 2. Ativo");
-            Console.WriteLine(" 3. Modelo da máquina");
-            Console.WriteLine(" 4. Voltar");
+            Console.WriteLine(" 1. Usuário\n 2. Ativo\n 3. Modelo\n 4. Voltar");
             Console.WriteLine("────────────────────────────────────────");
             Console.Write("\n Selecione: ");
             string tipo = Console.ReadLine();
 
             if (tipo == "4") return;
 
-            Console.Write(" Digite: ");
+            Console.Write(" Digite o termo: ");
             string termo = Console.ReadLine().ToLower();
-            var res = repo.ObterTodos().Where(x => (tipo == "1" && x.Usuario.ToLower().Contains(termo)) || (tipo == "2" && x.NomeMaquina.ToLower().Contains(termo)) || (tipo == "3" && x.ModeloFinal.ToLower().Contains(termo))).ToList();
+            var res = repo.ObterTodos().Where(x =>
+                (tipo == "1" && x.Usuario.ToLower().Contains(termo)) ||
+                (tipo == "2" && x.NomeMaquina.ToLower().Contains(termo)) ||
+                (tipo == "3" && x.ModeloFinal.ToLower().Contains(termo))).ToList();
 
             Console.WriteLine($"\n Encontrados: {res.Count}");
             foreach (var r in res) Console.WriteLine($" - {r.NomeMaquina} | {r.Usuario}");
@@ -182,24 +179,23 @@ namespace HelpDeskAPI
             if (res.Count > 0)
             {
                 Console.WriteLine("────────────────────────────────────────");
-                Console.WriteLine(" 1. Salvar em formato Excel");
-                Console.WriteLine(" 2. Voltar");
+                Console.WriteLine(" 1. Exportar para Excel\n 2. Voltar");
                 Console.Write("\n Selecione: ");
                 if (Console.ReadLine() == "1")
                 {
                     repo.ExportarParaDesktop(res);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\n [OK] Arquivo gerado na Área de Trabalho!");
+                    Console.WriteLine("\n [OK] Arquivo exportado!");
                     Console.ResetColor(); System.Threading.Thread.Sleep(2000);
                 }
             }
             else
             {
-                Console.WriteLine("\n Nenhum resultado encontrado. Tecla para voltar..."); Console.ReadKey();
+                Console.WriteLine("\n Nenhum registro encontrado."); Console.ReadKey();
             }
         }
 
-        static string Calcular(string i) { using (var s = SHA256.Create()) { var b = s.ComputeHash(Encoding.UTF8.GetBytes(i + saltEnind)); var sb = new StringBuilder(); foreach (var x in b) sb.Append(x.ToString("x2")); return sb.ToString(); } }
+        static string Calcular(string i) { using (var s = SHA256.Create()) { var b = s.ComputeHash(Encoding.UTF8.GetBytes(i + saltSistema)); var sb = new StringBuilder(); foreach (var x in b) sb.Append(x.ToString("x2")); return sb.ToString(); } }
         static string LerSenha() { string s = ""; ConsoleKeyInfo k; do { k = Console.ReadKey(true); if (k.Key != ConsoleKey.Backspace && k.Key != ConsoleKey.Enter) { s += k.KeyChar; Console.Write("*"); } else if (k.Key == ConsoleKey.Backspace && s.Length > 0) { s = s.Substring(0, s.Length - 1); Console.Write("\b \b"); } } while (k.Key != ConsoleKey.Enter); return s; }
     }
 }

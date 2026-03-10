@@ -7,7 +7,7 @@ namespace HelpDeskAPI
 {
     public class ColetorDados
     {
-        private string pathTXT = @"\\eni-tag-1899\TIC\TXT";
+        private string pathTXT = @"\\SERVIDOR\PASTA_LOGS";
 
         public Notebook ExecutarColeta()
         {
@@ -31,7 +31,6 @@ namespace HelpDeskAPI
             };
 
             GerarLogAutomatico(n);
-
             return n;
         }
 

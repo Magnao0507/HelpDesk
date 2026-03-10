@@ -8,8 +8,8 @@ namespace HelpDeskAPI
 {
     class Program
     {
-        private static string saltEnind = "[SEU_SALT_DE_SEGURANCA]";
-        private static string identificadorAcesso = "[HASH_DA_SENHA_MESTRE]";
+        private static string saltEnind = "@EnindTIC_2026_Sec!";
+        private static string identificadorAcesso = "24484d3fd9cc61b6336d4a5cbf8b0f36f58cfd60ff4ef72a8ee737d4b216e16d";
 
         static void Main(string[] args)
         {
@@ -22,7 +22,7 @@ namespace HelpDeskAPI
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("╔══════════════════════════════════════╗");
-                Console.WriteLine("║               SISTEMA TIC              ║");
+                Console.WriteLine("║              SISTEMA TIC             ║");
                 Console.WriteLine("╚══════════════════════════════════════╝");
                 Console.ResetColor();
                 Console.WriteLine(" 1. Coletar e enviar dados\n 2. Admin Center\n 3. Sair");
@@ -32,19 +32,9 @@ namespace HelpDeskAPI
 
                 if (op == "1")
                 {
-                    try
-                    {
-                        repo.Salvar(coletor.ExecutarColeta());
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("\n [OK] Inventário Atualizado!");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\n [ERRO] " + ex.Message);
-                    }
-                    Console.ResetColor();
-                    Console.ReadKey();
+                    try { repo.Salvar(coletor.ExecutarColeta()); Console.ForegroundColor = ConsoleColor.Green; Console.WriteLine("\n [OK] Inventário Atualizado!"); }
+                    catch (Exception ex) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n [ERRO] " + ex.Message); }
+                    Console.ResetColor(); Console.ReadKey();
                 }
                 else if (op == "2") MenuAdmin(repo, software);
                 else if (op == "3") break;
@@ -56,7 +46,7 @@ namespace HelpDeskAPI
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.WriteLine("╔══════════════════════════════════════╗");
-            Console.WriteLine("║            ACESSO RESTRITO             ║");
+            Console.WriteLine("║           ACESSO RESTRITO            ║");
             Console.WriteLine("╚══════════════════════════════════════╝");
             Console.ResetColor();
             Console.Write(" Senha de Administrador: ");
@@ -66,14 +56,12 @@ namespace HelpDeskAPI
             {
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                Console.WriteLine(" 1. [USUARIO_ADMIN_1]\n 2. [USUARIO_ADMIN_2]");
+                Console.WriteLine(" 1. André Marthas\n 2. Arthur Magno");
                 Console.ResetColor();
                 Console.Write("\n Admin: ");
                 string loginOp = Console.ReadLine();
-
-                string loginNome = loginOp == "1" ? "[NOME_ADMIN_1]" : "[NOME_ADMIN_2]";
+                string loginNome = loginOp == "1" ? "André Marthas" : "Arthur Magno";
                 DateTime entrada = DateTime.Now;
-
                 while (true)
                 {
                     Console.Clear();
@@ -86,23 +74,12 @@ namespace HelpDeskAPI
                     Console.WriteLine("────────────────────────────────────────");
                     Console.Write(" Selecione: ");
                     string op = Console.ReadLine();
-
                     if (op == "1") MenuInst(software);
                     else if (op == "2") ExecutarBusca(repo);
-                    else if (op == "3")
-                    {
-                        repo.RegistrarLogAcesso(loginNome, "[SENHA_OCULTA]", (DateTime.Now - entrada).ToString(@"hh\:mm\:ss"));
-                        break;
-                    }
+                    else if (op == "3") { repo.RegistrarLogAcesso(loginNome, sDigitada, (DateTime.Now - entrada).ToString(@"hh\:mm\:ss")); break; }
                 }
             }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\n ACESSO NEGADO.");
-                Console.ResetColor();
-                System.Threading.Thread.Sleep(1500);
-            }
+            else { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n ACESSO NEGADO."); Console.ResetColor(); System.Threading.Thread.Sleep(1500); }
         }
 
         static void MenuInst(GerenciadorSoftware sw)
@@ -143,16 +120,14 @@ namespace HelpDeskAPI
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("\n [AVISO] Escolha uma ou mais opções!");
-                        Console.ResetColor();
-                        System.Threading.Thread.Sleep(1500);
+                        Console.ResetColor(); System.Threading.Thread.Sleep(1500);
                     }
                     else
                     {
                         if (ConfirmarLote(selecionados))
                         {
                             sw.ExecutarInstalacaoEmLote(selecionados);
-                            Console.WriteLine("\n Tecla para continuar...");
-                            Console.ReadKey();
+                            Console.WriteLine("\n Tecla para continuar..."); Console.ReadKey();
                             selecionados.Clear();
                         }
                     }
@@ -169,12 +144,10 @@ namespace HelpDeskAPI
             Console.WriteLine("║       CONFIRMAÇÃO DE INSTALAÇÃO      ║");
             Console.WriteLine("╚══════════════════════════════════════╝");
             Console.ResetColor();
-
             if (selecionados.Contains(1)) Console.WriteLine(" > Ninite");
             if (selecionados.Contains(2)) Console.WriteLine(" > Office 365");
             if (selecionados.Contains(3)) Console.WriteLine(" > Project");
             if (selecionados.Contains(4)) Console.WriteLine(" > Bitdefender");
-
             Console.WriteLine("────────────────────────────────────────");
             Console.WriteLine(" 1. Confirmar\n 2. Voltar");
             Console.Write("\n Selecione: ");
@@ -201,12 +174,7 @@ namespace HelpDeskAPI
 
             Console.Write(" Digite: ");
             string termo = Console.ReadLine().ToLower();
-
-            var res = repo.ObterTodos().Where(x =>
-                (tipo == "1" && x.Usuario.ToLower().Contains(termo)) ||
-                (tipo == "2" && x.NomeMaquina.ToLower().Contains(termo)) ||
-                (tipo == "3" && x.ModeloFinal.ToLower().Contains(termo))
-            ).ToList();
+            var res = repo.ObterTodos().Where(x => (tipo == "1" && x.Usuario.ToLower().Contains(termo)) || (tipo == "2" && x.NomeMaquina.ToLower().Contains(termo)) || (tipo == "3" && x.ModeloFinal.ToLower().Contains(termo))).ToList();
 
             Console.WriteLine($"\n Encontrados: {res.Count}");
             foreach (var r in res) Console.WriteLine($" - {r.NomeMaquina} | {r.Usuario}");
@@ -222,47 +190,16 @@ namespace HelpDeskAPI
                     repo.ExportarParaDesktop(res);
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\n [OK] Arquivo gerado na Área de Trabalho!");
-                    Console.ResetColor();
-                    System.Threading.Thread.Sleep(2000);
+                    Console.ResetColor(); System.Threading.Thread.Sleep(2000);
                 }
             }
             else
             {
-                Console.WriteLine("\n Nenhum resultado encontrado. Tecla para voltar...");
-                Console.ReadKey();
+                Console.WriteLine("\n Nenhum resultado encontrado. Tecla para voltar..."); Console.ReadKey();
             }
         }
 
-        static string Calcular(string i)
-        {
-            using (var s = SHA256.Create())
-            {
-                var b = s.ComputeHash(Encoding.UTF8.GetBytes(i + saltEnind));
-                var sb = new StringBuilder();
-                foreach (var x in b) sb.Append(x.ToString("x2"));
-                return sb.ToString();
-            }
-        }
-
-        static string LerSenha()
-        {
-            string s = "";
-            ConsoleKeyInfo k;
-            do
-            {
-                k = Console.ReadKey(true);
-                if (k.Key != ConsoleKey.Backspace && k.Key != ConsoleKey.Enter)
-                {
-                    s += k.KeyChar;
-                    Console.Write("*");
-                }
-                else if (k.Key == ConsoleKey.Backspace && s.Length > 0)
-                {
-                    s = s.Substring(0, s.Length - 1);
-                    Console.Write("\b \b");
-                }
-            } while (k.Key != ConsoleKey.Enter);
-            return s;
-        }
+        static string Calcular(string i) { using (var s = SHA256.Create()) { var b = s.ComputeHash(Encoding.UTF8.GetBytes(i + saltEnind)); var sb = new StringBuilder(); foreach (var x in b) sb.Append(x.ToString("x2")); return sb.ToString(); } }
+        static string LerSenha() { string s = ""; ConsoleKeyInfo k; do { k = Console.ReadKey(true); if (k.Key != ConsoleKey.Backspace && k.Key != ConsoleKey.Enter) { s += k.KeyChar; Console.Write("*"); } else if (k.Key == ConsoleKey.Backspace && s.Length > 0) { s = s.Substring(0, s.Length - 1); Console.Write("\b \b"); } } while (k.Key != ConsoleKey.Enter); return s; }
     }
 }

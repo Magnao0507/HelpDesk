@@ -2,119 +2,70 @@
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HelpDeskAPI
 {
     public class GerenciadorSoftware
     {
-        private readonly string hostTIC = @"[CAMINHO_REDE_TIC_HOSTNAME]";
-        private readonly string hostBit = @"[CAMINHO_REDE_BITDEFENDER_HOSTNAME]";
-
-        private readonly string ipTIC = @"[CAMINHO_REDE_TIC_IP]";
-        private readonly string ipBit = @"[CAMINHO_REDE_BITDEFENDER_IP]";
-
-        private string GetPathTIC() => Directory.Exists(hostTIC) ? hostTIC : ipTIC;
-        private string GetPathBit() => Directory.Exists(hostBit) ? hostBit : ipBit;
+        private string pathTIC = @"\\eni-tag-1899\Depto\24.TIC Pública\INSTALADORES";
+        private string pathBit = @"\\eni-tag-1899\Publico\Arthur Magno\Downloads\BITDEFENDER\SEDE";
 
         public void ExecutarInstalacaoEmLote(List<int> ids)
         {
             List<Process> processosAtivos = new List<Process>();
-
             Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine("\n [SISTEMA] Iniciando instalações simultâneas...");
+            Console.WriteLine("\n [SISTEMA] Iniciando instalações...");
             Console.ResetColor();
-
-            string currentTIC = GetPathTIC();
-            string currentBit = GetPathBit();
 
             foreach (int id in ids)
             {
                 Process p = null;
-
-                switch (id)
+                if (id == 1) p = PrepararEIniciar(pathTIC, "Ninite AnyDesk Chrome Foxit Reader Google Earth Installer.exe", "Ninite", "", true);
+                else if (id == 2) p = PrepararEIniciar(pathTIC, "OfficeSetup.exe", "Office 365", "", true);
+                else if (id == 3) p = PrepararEIniciar(pathTIC, "Project.exe", "Project", "", true);
+                else if (id == 4)
                 {
-                    case 1:
-                        p = PrepararEIniciar(currentTIC, "Ninite AnyDesk Chrome Foxit Reader Google Earth Installer.exe", "Ninite Bundle", "", true);
-                        break;
-                    case 2:
-                        p = PrepararEIniciar(currentTIC, "OfficeSetup.exe", "Office 365", "", true);
-                        break;
-                    case 3:
-                        p = PrepararEIniciar(currentTIC, "Project.exe", "Microsoft Project", "", true);
-                        break;
-                    case 4:
-                        string linkShortcut = "BitDefender.lnk";
-                        if (File.Exists(Path.Combine(currentTIC, linkShortcut)))
-                        {
-                            p = PrepararEIniciar(currentTIC, linkShortcut, "Bitdefender", "", false);
-                        }
-                        else
-                        {
-                            string nomeBD = "setupdownloader_[TOKEN_DE_INSTALACAO_BITDEFENDER].exe";
-                            p = PrepararEIniciar(currentBit, nomeBD, "Bitdefender", "/S", false);
-                        }
-                        break;
+                    string linkX = "BitDefender.lnk";
+                    if (File.Exists(Path.Combine(pathTIC, linkX)))
+                        p = PrepararEIniciar(pathTIC, linkX, "Bitdefender", "", false);
+                    else
+                    {
+                        string nomeBD = "setupdownloader_[aHR0cHM6Ly9jbG91ZC1lY3MuZ3Jhdml0eXpvbmUuYml0ZGVmZW5kZXIuY29tL1BhY2thZ2VzL0JTVFdJTi8wLzhLUGhhRC9pbnN0YWxsZXIueG1sP2xhbmc9cHQtQlI=].exe";
+                        p = PrepararEIniciar(pathBit, nomeBD, "Bitdefender", "/S", false);
+                    }
                 }
-
                 if (p != null) processosAtivos.Add(p);
             }
 
-            Console.WriteLine("\n [SISTEMA] Aguardando conclusão de todos os processos...");
-
-            foreach (var p in processosAtivos)
-            {
-                try
-                {
-                    if (!p.HasExited) p.WaitForExit();
-                }
-                catch
-                {
-                }
-            }
+            Console.WriteLine("\n [SISTEMA] Aguardando conclusão de todas instalações...");
+            foreach (var p in processosAtivos) { try { p.WaitForExit(); } catch { } }
 
             Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("\n [OK] Processos finalizados!");
             Console.ResetColor();
         }
 
-        private Process PrepararEIniciar(string pastaOrigem, string arquivoNome, string nomeExibicao, string argumentos, bool ocultarJanela)
+        private Process PrepararEIniciar(string pastaOrigem, string arq, string nome, string arg, bool invisivel)
         {
-            string pathOrigemCompleto = Path.Combine(pastaOrigem, arquivoNome);
-            string pathDestinoLocal = Path.Combine(Path.GetTempPath(), arquivoNome);
-
+            string orig = Path.Combine(pastaOrigem, arq);
+            string dest = Path.Combine(Path.GetTempPath(), arq);
             try
             {
-                if (File.Exists(pathOrigemCompleto))
+                if (File.Exists(orig))
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($" [SISTEMA] Copiando e iniciando {nomeExibicao}...");
-                    Console.ResetColor();
-
-                    File.Copy(pathOrigemCompleto, pathDestinoLocal, true);
-
-                    ProcessStartInfo psi = new ProcessStartInfo
-                    {
-                        FileName = pathDestinoLocal,
-                        Arguments = argumentos,
-                        UseShellExecute = true,
-                        CreateNoWindow = ocultarJanela
-                    };
-
+                    Console.WriteLine($" [SISTEMA] Copiando e iniciando {nome}...");
+                    File.Copy(orig, dest, true);
+                    ProcessStartInfo psi = new ProcessStartInfo { FileName = dest, Arguments = arg, UseShellExecute = true, CreateNoWindow = invisivel };
                     return Process.Start(psi);
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($" [ERRO] Arquivo {arquivoNome} não encontrado no repositório.");
-                    Console.ResetColor();
+                    Console.WriteLine($" [ERRO] {arq} não encontrado.");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($" [ERRO]: {ex.Message}");
-            }
-
+            catch (Exception ex) { Console.WriteLine(" [ERRO]: " + ex.Message); }
             return null;
         }
     }

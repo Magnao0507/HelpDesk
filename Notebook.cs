@@ -17,24 +17,20 @@
 
         public static Notebook DeCsv(string linha)
         {
-            if (string.IsNullOrWhiteSpace(linha)) return null;
-
-            var colunas = linha.Split(';');
-
-            if (colunas.Length < 10) return null;
-
+            var c = linha.Split(';');
+            if (c.Length < 10) return null;
             return new Notebook
             {
-                Data = colunas[0],
-                Usuario = colunas[1],
-                ModeloFinal = colunas[2],
-                NomeMaquina = colunas[3],
-                Processador = colunas[4],
-                RAM = colunas[5],
-                TotalDisco = colunas[6],
-                PercentualUso = colunas[7],
-                NumeroSerie = colunas[8],
-                SO = colunas[9]
+                Data = c[0],
+                Usuario = c[1],
+                ModeloFinal = c[2],
+                NomeMaquina = c[3],
+                Processador = c[4],
+                RAM = c[5],
+                TotalDisco = c[6],
+                PercentualUso = c[7],
+                NumeroSerie = c[8],
+                SO = c[9]
             };
         }
     }
